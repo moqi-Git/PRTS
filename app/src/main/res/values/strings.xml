@@ -1,5 +1,18 @@
 <resources>
-    <string name="app_name">PRTS代理作战</string>
+    <string name="app_name">智能打工机</string>
 
-    <string name="as_desp">PRTS代理作战: \n 自动化理智消失术，详情查看「应用-关于」</string>
+    <string name="prts_as_desp">PRTS代理作战： \n 自动化理智消失术，仅支持1–7，详情查看「应用-关于」</string>
+    <string name="wechat_as_desp">微信自动回复：\n 收到特定微信通知自动回复指定内容 </string>
+    <string name="title_activity_navi">NaviActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">声明</string>
+    <string name="menu_gallery">PRTS代理作战</string>
+    <string name="menu_slideshow">微信自动化</string>
+
 </resources>

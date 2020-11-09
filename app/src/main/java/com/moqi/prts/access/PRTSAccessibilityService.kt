@@ -2,15 +2,16 @@ package com.moqi.prts.access
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.app.Notification
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Path
 import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import android.widget.Toast
+import java.lang.Exception
 import kotlin.concurrent.thread
 
 
@@ -23,11 +24,13 @@ class PRTSAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         GlobalStatus.isPRTSConnected = true
 //        EventBus.getDefault().register(this)
+        Toast.makeText(applicationContext, "PRTS连接成功", Toast.LENGTH_SHORT).show()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         GlobalStatus.isPRTSConnected = false
 //        EventBus.getDefault().unregister(this)
+        Toast.makeText(applicationContext, "PRTS已断开", Toast.LENGTH_SHORT).show()
         return super.onUnbind(intent)
     }
 
@@ -36,28 +39,28 @@ class PRTSAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        event?.let {
+        event?.also {
             Log.e("asdfg", "event: ${it.eventType}")
-            val root = rootInActiveWindow ?: return
-            logNode(root)
+//            val root = rootInActiveWindow ?: return
+////            logNode(root)
 
             when (it.eventType) {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-                    Log.e("asdfg", "foreground app changed to ${it.packageName}")
-                    GlobalStatus.currentForegroundApp = it.packageName.toString()
-
-                    if (it.packageName == "com.hypergryph.arknights") {
-                        handler.postDelayed({ auto1_7() }, 3000)
-                    }
+                    arknights(it)
                 }
-
-//                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
-//                    if (root.packageName == "com.hypergryph.arknights") {
-//                        Log.e("asdfg", "hhh")
-//                        clickPosition(1370.0f, 656.0f)
-//                    }
-//                }
             }
+        }
+    }
+
+    private fun arknights(event: AccessibilityEvent) {
+        Log.e("asdfg", "foreground app changed to ${event.packageName}")
+        GlobalStatus.currentForegroundApp = event.packageName.toString()
+
+        if (event.packageName == "com.hypergryph.arknights" && !isThreadRunning) {
+            handler.postDelayed({
+                Toast.makeText(applicationContext, "PRTS:3秒后开始执行", Toast.LENGTH_SHORT).show()
+                auto1_7()
+            }, 3000)
         }
     }
 
@@ -115,4 +118,17 @@ class PRTSAccessibilityService : AccessibilityService() {
 
     }
 
+    private fun clickArea(area: Area){
+        val px = area.ltx + (area.rbx - area.ltx) * Math.random()
+        val py = area.lty + (area.rby - area.lty) * Math.random()
+        clickPosition(px.toFloat(), py.toFloat())
+    }
+
 }
+
+data class Area(
+    val ltx: Float,
+    val lty: Float,
+    val rbx: Float,
+    val rby: Float
+)

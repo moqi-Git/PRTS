@@ -6,7 +6,10 @@ object GlobalStatus {
 
     var isPRTSConnected = false
     var currentForegroundApp = ""
+    var hasCapturePermission = false
 
     var livePRTSConnected = MutableLiveData<Boolean>()
+
+
 
 }
