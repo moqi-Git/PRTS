@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.moqi.prts.access.GlobalStatus
 
 class NaviActivity : AppCompatActivity() {
 
@@ -22,6 +23,8 @@ class NaviActivity : AppCompatActivity() {
         setContentView(R.layout.activity_navi)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        GlobalStatus.setGlobalScreenSize(this)
 
 //        val fab: FloatingActionButton = findViewById(R.id.fab)
 //        fab.setOnClickListener { view ->

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.access.naviToSettingAccessibility
+import com.moqi.prts.ext.getWindowSize
 import kotlinx.android.synthetic.main.fragment_gallery.*
 
 class PRTSFragment : Fragment() {
@@ -44,6 +45,7 @@ class PRTSFragment : Fragment() {
           }
           1 -> {
             //
+            Toast.makeText(requireContext(), "screen width = ${GlobalStatus.screenWidth}, height = ${GlobalStatus.screenHeight}", Toast.LENGTH_SHORT).show()
           }
           2 -> {
             if (!GlobalStatus.isPRTSConnected){

@@ -20,11 +20,17 @@ class PRTSAccessibilityService : AccessibilityService() {
     private val handler = Handler()
     private var isThreadRunning = false
 
+    private val areaList = ArrayList<Area>()
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         GlobalStatus.isPRTSConnected = true
 //        EventBus.getDefault().register(this)
         Toast.makeText(applicationContext, "PRTS连接成功", Toast.LENGTH_SHORT).show()
+
+        areaRangeList.forEach {
+            areaList.add(Area(it.ltx * GlobalStatus.screenWidth, it.lty * GlobalStatus.screenHeight, it.rbx * GlobalStatus.screenWidth, it.rby * GlobalStatus.screenHeight))
+        }
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -57,8 +63,8 @@ class PRTSAccessibilityService : AccessibilityService() {
         GlobalStatus.currentForegroundApp = event.packageName.toString()
 
         if (event.packageName == "com.hypergryph.arknights" && !isThreadRunning) {
+            Toast.makeText(applicationContext, "PRTS:3秒后开始执行", Toast.LENGTH_SHORT).show()
             handler.postDelayed({
-                Toast.makeText(applicationContext, "PRTS:3秒后开始执行", Toast.LENGTH_SHORT).show()
                 auto1_7()
             }, 3000)
         }
@@ -85,12 +91,12 @@ class PRTSAccessibilityService : AccessibilityService() {
         thread {
             isThreadRunning = true
             while (true) {
-                clickPosition(1370.0f, 655.0f)
-                Thread.sleep(5000)
-                clickPosition(1230.0f, 505.0f)
-                Thread.sleep(95 * 1000)
-                clickPosition(1201.0f, 503.0f)
+                clickArea(areaList[0])
                 Thread.sleep(7000)
+                clickArea(areaList[1])
+                Thread.sleep(110 * 1000)
+                clickArea(areaList[2])
+                Thread.sleep(10 * 1000)
             }
         }
     }
@@ -123,7 +129,21 @@ class PRTSAccessibilityService : AccessibilityService() {
         val py = area.lty + (area.rby - area.lty) * Math.random()
         clickPosition(px.toFloat(), py.toFloat())
     }
-
+    /**
+     * 1305,637 0.858 0.884
+     * 1463,683 0.963 0.949
+     * 1170,380 0.769 0.527
+     * 1282,634 0.843 0.880
+     * 1209,171 0.795 0.237
+     * 1429.322 0.940 0.447
+     *
+     * 1520,720
+     */
+    private val areaRangeList = arrayListOf(
+        Area(0.858f, 0.884f, 0.963f, 0.949f),
+        Area(0.769f, 0.527f, 0.843f, 0.880f),
+        Area(0.795f, 0.237f, 0.940f, 0.447f)
+    )
 }
 
 data class Area(
