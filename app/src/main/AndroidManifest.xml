@@ -22,6 +22,7 @@
         <activity android:name=".MainActivity" />
 
         <service
+            android:label="PRTS代理作战"
             android:name=".access.PRTSAccessibilityService"
             android:enabled="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
@@ -34,6 +35,7 @@
                 android:resource="@xml/prts_as_config" />
         </service>
         <service
+            android:label="微信自动回复"
             android:name=".access.WeChatAutoReplyService"
             android:enabled="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >

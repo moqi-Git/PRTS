@@ -10,6 +10,4 @@ object GlobalStatus {
 
     var livePRTSConnected = MutableLiveData<Boolean>()
 
-
-
 }

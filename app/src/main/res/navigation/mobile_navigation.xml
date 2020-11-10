@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.moqi.prts.ui.gallery.GalleryFragment"
+        android:name="com.moqi.prts.ui.gallery.PRTSFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.moqi.prts.ui.slideshow.SlideshowFragment"
+        android:name="com.moqi.prts.ui.slideshow.AutoReplyFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 </navigation>
