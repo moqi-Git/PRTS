@@ -19,9 +19,9 @@ fun Context.isFloatOnOpen(): Boolean{
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.requestCapturePermission(requestCode: Int) {
     val mediaProjectionManager =
-        getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
+        getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     this.startActivityForResult(
-        mediaProjectionManager!!.createScreenCaptureIntent(),
+        mediaProjectionManager.createScreenCaptureIntent(),
         requestCode
     )
 }

@@ -5,5 +5,5 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class PRTSViewModel : ViewModel() {
-
+    val data = MutableLiveData<String>("asd")
 }

@@ -1,5 +1,8 @@
 package com.moqi.prts
+import android.content.Context
 import android.content.Intent
+import android.hardware.display.DisplayManager
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -15,6 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.moqi.prts.access.GlobalStatus
+import com.moqi.prts.permission.requestCapturePermission
 
 class NaviActivity : AppCompatActivity() {
 
@@ -57,6 +61,5 @@ class NaviActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.e("asdfg", "requestCode = $requestCode, resultCode = $resultCode")
-
     }
 }
