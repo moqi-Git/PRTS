@@ -2,8 +2,6 @@ package com.moqi.prts.access
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
-import android.app.Notification
-import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Path
 import android.os.Handler
@@ -11,7 +9,6 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
-import java.lang.Exception
 import kotlin.concurrent.thread
 
 
@@ -29,7 +26,14 @@ class PRTSAccessibilityService : AccessibilityService() {
         Toast.makeText(applicationContext, "PRTS连接成功", Toast.LENGTH_SHORT).show()
 
         areaRangeList.forEach {
-            areaList.add(Area(it.ltx * GlobalStatus.screenWidth, it.lty * GlobalStatus.screenHeight, it.rbx * GlobalStatus.screenWidth, it.rby * GlobalStatus.screenHeight))
+            areaList.add(
+                Area(
+                    it.ltx * GlobalStatus.screenWidth,
+                    it.lty * GlobalStatus.screenHeight,
+                    it.rbx * GlobalStatus.screenWidth,
+                    it.rby * GlobalStatus.screenHeight
+                )
+            )
         }
     }
 
@@ -46,7 +50,7 @@ class PRTSAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event?.also {
-            Log.e("asdfg", "event: ${it.eventType}")
+            Log.e("asdfg", "event: ${it.eventType}, text:${it.contentChangeTypes}")
 //            val root = rootInActiveWindow ?: return
 ////            logNode(root)
 
@@ -106,10 +110,11 @@ class PRTSAccessibilityService : AccessibilityService() {
         path.moveTo(px, py)
         path.lineTo(px, py)
 
-        val desp = GestureDescription.Builder()
+        val gesture = GestureDescription.Builder()
             .addStroke(GestureDescription.StrokeDescription(path, 10L, 34L))
             .build()
-        dispatchGesture(desp, object : GestureResultCallback() {
+
+        dispatchGesture(gesture, object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 Log.e("asdfg", "click position ($px, $py) completed")
             }
@@ -120,15 +125,18 @@ class PRTSAccessibilityService : AccessibilityService() {
         }, null)
     }
 
+
     private fun scroll(fromX: Float, fromY: Float, toX: Float, toY: Float) {
 
     }
 
-    private fun clickArea(area: Area){
+    private fun clickArea(area: Area) {
         val px = area.ltx + (area.rbx - area.ltx) * Math.random()
         val py = area.lty + (area.rby - area.lty) * Math.random()
         clickPosition(px.toFloat(), py.toFloat())
     }
+
+
     /**
      * 1305,637 0.858 0.884
      * 1463,683 0.963 0.949

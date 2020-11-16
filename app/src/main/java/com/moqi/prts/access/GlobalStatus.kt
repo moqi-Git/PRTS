@@ -13,9 +13,6 @@ object GlobalStatus {
     var screenWidth = 0
     var screenHeight = 0
 
-    var livePRTSConnected = MutableLiveData<Boolean>()
-
-
     fun setGlobalScreenSize(act: Activity){
         val size = act.getWindowSize()
         if (size.width > size.height){

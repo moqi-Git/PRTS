@@ -13,6 +13,7 @@ import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.access.naviToSettingAccessibility
 import com.moqi.prts.ext.getWindowSize
+import com.moqi.prts.permission.requestCapturePermission
 import kotlinx.android.synthetic.main.fragment_gallery.*
 
 class PRTSFragment : Fragment() {
