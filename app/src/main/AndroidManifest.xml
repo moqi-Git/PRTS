@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.moqi.prts" >
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -46,6 +48,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/wechat_as_config" />
         </service>
+
+        <service android:name=".float.PRTSFloatService" />
     </application>
 
 </manifest>

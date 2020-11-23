@@ -29,6 +29,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/src_tv_start"
-        android:id="@+id/scr_sv_main"/>
+        android:id="@+id/scr_sv_main"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/src_tv_start"
+        android:id="@+id/scr_iv_main"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
