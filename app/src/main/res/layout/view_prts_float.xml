@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#9066ccff">
+    android:background="#4CFFB4B4">
 
     <TextView
         android:id="@+id/float_tv_prts"
@@ -13,7 +13,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="32dp"
-        android:text="PRTS"
+        android:text="PRTS监视区域"
         android:textColor="#fff"
         android:textSize="28sp"/>
 

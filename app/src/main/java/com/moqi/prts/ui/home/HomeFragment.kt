@@ -1,5 +1,10 @@
 package com.moqi.prts.ui.home
 
+import android.app.Activity.RESULT_OK
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
@@ -8,6 +13,7 @@ import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -22,6 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
+import com.moqi.prts.ext.isServiceRunning
 import com.moqi.prts.float.PRTSFloatService
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -30,9 +37,10 @@ class HomeFragment : Fragment() {
   private lateinit var homeViewModel: HomeViewModel
   private lateinit var mm: MediaProjectionManager
   private lateinit var holder: SurfaceHolder
-  private lateinit var imageReader: ImageReader
 
-  private var screenShot = false
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -46,38 +54,18 @@ class HomeFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    mm = requireContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-    startActivityForResult(mm.createScreenCaptureIntent(), 101)
-
     src_tv_start.setOnClickListener {
-//      Log.e("qwert", "screenshot click")
-//      screenShot = true
-      requireContext().startService(Intent(requireContext(), PRTSFloatService::class.java).apply {
-        putExtra("float", true)
-      })
-    }
-    imageReader = ImageReader.newInstance(GlobalStatus.screenHeight, GlobalStatus.screenWidth, PixelFormat.RGBA_8888, 2).apply {
-      setOnImageAvailableListener({
-//        Log.e("asdfg", "OnImageAvailable")
-        val image = it.acquireNextImage()
-        if (image != null){
-          val info = image.planes
-//          Log.e("asdfg", "${info}")
-          if (screenShot){
-            Log.e("qwert", "screenshot start")
-            screenShot(image)
-            Log.e("qwert", "screenshot end")
-            screenShot = false
-          }
-          image.close()
-        }
-      }, null)
+      if (requireContext().isServiceRunning("com.moqi.prts.float.PRTSFloatService")){
+        return@setOnClickListener
+      }
+      mm = requireContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+      startActivityForResult(mm.createScreenCaptureIntent(), 101)
     }
 //    holder = scr_sv_main.holder
   }
 
   private fun screenShot(image: Image){
-    logImageInfo(image)
+//    logImageInfo(image)
     val buffer = image.planes[0].buffer
     val width = image.width
     val height = image.height
@@ -96,13 +84,15 @@ class HomeFragment : Fragment() {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    val projection = mm.getMediaProjection(resultCode, data?:Intent())
-
-    projection.createVirtualDisplay("test", GlobalStatus.screenHeight, GlobalStatus.screenWidth,
-    1, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.surface, null, null)
-  }
-
-  private fun logImageInfo(image: Image){
-    Log.e("asdfg", "format=${image.format}, size=(${image.width}, ${image.height}), rs=${image.planes[0].rowStride}, ps=${image.planes[0].pixelStride}")
+    if (requestCode == 101 && resultCode == RESULT_OK) {
+      data?.putExtra("capture", true)
+      data?.putExtra("float", true)
+      data?.setClass(requireContext(), PRTSFloatService::class.java)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        requireContext().startForegroundService(data)
+      } else {
+        requireContext().startService(data)
+      }
+    }
   }
 }
