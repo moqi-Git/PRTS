@@ -54,6 +54,7 @@ class PRTSFloatService : Service() {
         }
     }
 
+    // todo:// 封装View对象，独立出去
     private fun createFloatView() {
         mFloatView =
             LayoutInflater.from(applicationContext).inflate(R.layout.view_prts_float, null, false)
