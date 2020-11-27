@@ -1,5 +1,6 @@
 package com.moqi.prts.float
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -26,12 +27,16 @@ class PRTSFloatService : Service() {
     private lateinit var mProjectionManager: MediaProjectionManager
     private lateinit var mWindowManager: WindowManager
     private lateinit var mNotificationManager: NotificationManager
+    private lateinit var windowLayoutParams: WindowManager.LayoutParams
 
     private var mediaProjection: MediaProjection? = null
     private var imageReader: ImageReader? = null
 
     private var mFloatView: View? = null
+    private var mTouchX = 0f
+    private var mTouchY = 0f
     private var isShowing = false
+
 
     private val handler = Handler()
 
@@ -55,14 +60,44 @@ class PRTSFloatService : Service() {
     }
 
     // todo:// 封装View对象，独立出去
+    @SuppressLint("ClickableViewAccessibility")
     private fun createFloatView() {
         mFloatView =
             LayoutInflater.from(applicationContext).inflate(R.layout.view_prts_float, null, false)
         mFloatView?.apply {
             float_tv_prts.setOnClickListener {
-                stopSelf()
+//                stopSelf()
+            }
+            float_iv_prts.setOnTouchListener { v, event ->
+                when(event.actionMasked){
+                    MotionEvent.ACTION_DOWN -> {
+                        mTouchX = event.x
+                        mTouchY = event.y
+                        return@setOnTouchListener true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+//                        val dx = event.x - mTouchX
+//                        val dy = event.y - mTouchY
+//                        Log.e("asdfg", "ACTION_MOVE float view to ${event.x}, ${event.y}")
+                        moveViewTo(event.rawX - mTouchX, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
+                    }
+                    MotionEvent.ACTION_UP -> {
+//                        Log.e("asdfg", "ACTION_UP float view to ${event.x}, ${event.y}")
+                        moveViewTo(0f, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
+                    }
+                }
+                return@setOnTouchListener false
             }
         }
+    }
+
+    private fun moveViewTo(x: Float, y: Float){
+//        Log.e("asdfg", "move float view to $x, $y")
+        windowLayoutParams.apply {
+            this.x = x.toInt()
+            this.y = y.toInt()
+        }
+        mWindowManager.updateViewLayout(mFloatView, windowLayoutParams)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -92,24 +127,23 @@ class PRTSFloatService : Service() {
 
     private fun showFloatView() {
         isShowing = true
-        val lp = WindowManager.LayoutParams().apply {
+        windowLayoutParams = WindowManager.LayoutParams().apply {
             type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             } else {
                 WindowManager.LayoutParams.TYPE_PHONE
             }
 //            gravity = Gravity.START or Gravity.TOP
-            flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN
             format = PixelFormat.RGBA_8888
 //            x = 0
 //            y = 0
-            width = WindowManager.LayoutParams.MATCH_PARENT
-            height = WindowManager.LayoutParams.MATCH_PARENT
+            gravity = Gravity.START or Gravity.TOP
+            width = WindowManager.LayoutParams.WRAP_CONTENT
+            height = WindowManager.LayoutParams.WRAP_CONTENT
         }
-        mWindowManager.addView(mFloatView, lp)
+        mWindowManager.addView(mFloatView, windowLayoutParams)
     }
 
     private fun startMediaProjection(intent: Intent) {

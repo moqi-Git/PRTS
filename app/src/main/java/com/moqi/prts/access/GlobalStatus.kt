@@ -1,8 +1,8 @@
 package com.moqi.prts.access
 
 import android.app.Activity
-import androidx.lifecycle.MutableLiveData
 import com.moqi.prts.ext.getWindowSize
+
 
 object GlobalStatus {
 
@@ -12,6 +12,7 @@ object GlobalStatus {
 
     var screenWidth = 0
     var screenHeight = 0
+    var statusBarHeight = 0
 
     fun setGlobalScreenSize(act: Activity){
         val size = act.getWindowSize()
@@ -21,6 +22,11 @@ object GlobalStatus {
         } else {
             screenHeight = size.width
             screenWidth = size.height
+        }
+        val resourceId: Int = act.resources
+            .getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            statusBarHeight = act.resources.getDimensionPixelSize(resourceId)
         }
     }
 }
