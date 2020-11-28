@@ -188,6 +188,7 @@ class PRTSFloatService : Service() {
         // 3.确定页面对应的可操作区域，进行模拟操作
         // 4.这些操作能在主线程做吗
         logImageInfo(im)
+
     }
 
 
