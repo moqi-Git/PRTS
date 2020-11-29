@@ -5,24 +5,29 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.Toast
+import androidx.viewbinding.ViewBinding
 import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.access.naviToSettingAccessibility
+import com.moqi.prts.databinding.ActivityMainBinding
 import com.moqi.prts.permission.requestCapturePermission
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var vb: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        vb = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(vb.root)
 
-        main_btn_get_permission.setOnClickListener {
+        vb.mainBtnGetPermission.setOnClickListener {
             if (!GlobalStatus.isPRTSConnected){
                 naviToSettingAccessibility()
             } else {
                 Toast.makeText(this, "PRTS正常运行中", Toast.LENGTH_SHORT).show()
             }
         }
-
 //        requestCapturePermission(1002)
     }
 

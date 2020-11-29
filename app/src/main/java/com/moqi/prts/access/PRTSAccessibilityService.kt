@@ -39,6 +39,8 @@ class PRTSAccessibilityService : AccessibilityService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         GlobalStatus.isPRTSConnected = false
+        handler.removeCallbacksAndMessages(null)
+        isThreadRunning = false
 //        EventBus.getDefault().unregister(this)
         Toast.makeText(applicationContext, "PRTS已断开", Toast.LENGTH_SHORT).show()
         return super.onUnbind(intent)
@@ -92,17 +94,17 @@ class PRTSAccessibilityService : AccessibilityService() {
         if (isThreadRunning) {
             return
         }
-        thread {
-            isThreadRunning = true
-            while (true) {
-                clickArea(areaList[0])
-                Thread.sleep(7000)
-                clickArea(areaList[1])
-                Thread.sleep(110 * 1000)
-                clickArea(areaList[2])
-                Thread.sleep(10 * 1000)
-            }
-        }
+        isThreadRunning = true
+        clickArea(areaList[0])
+        handler.postDelayed({
+            clickArea(areaList[1])
+        }, 7000)
+        handler.postDelayed({
+            clickArea(areaList[2])
+        }, 7000+11000)
+        handler.postDelayed({
+            auto1_7()
+        }, 7000+11000+10000)
     }
 
     private fun clickPosition(px: Float, py: Float) {
