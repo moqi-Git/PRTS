@@ -23,7 +23,7 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
+            minifyEnabled(true)
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -43,8 +43,9 @@ android {
 }
 
 dependencies {
+    val kotlin_version by extra("1.4.20")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("androidx.core:core-ktx:1.3.1")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.3")

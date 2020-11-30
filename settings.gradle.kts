@@ -1,3 +1,4 @@
+include(":ptilopsis")
 include(":app")
 rootProject.name = "PRTS"
 rootProject.buildFileName = "build.gradle.kts"
