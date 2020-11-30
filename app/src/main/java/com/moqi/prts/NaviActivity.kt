@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.permission.requestCapturePermission
+import com.moqi.prts.ptilopsis.PtilopsisEyes
 
 class NaviActivity : AppCompatActivity() {
 
@@ -34,7 +35,9 @@ class NaviActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         GlobalStatus.setGlobalScreenSize(this)
-
+        Log.e(
+            "asdfg", PtilopsisEyes().getOpenCVVersion()
+        )
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -77,7 +80,7 @@ class NaviActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.e("asdfg", "requestCode = $requestCode, resultCode = $resultCode")
-        if (requestCode == 101){
+        if (requestCode == 101) {
             checkOverlayPermission()
         }
     }

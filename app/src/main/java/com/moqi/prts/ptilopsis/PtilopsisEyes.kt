@@ -8,9 +8,7 @@ class PtilopsisEyes{
         init {
             System.loadLibrary("libptilopsis")
         }
-
-
     }
 
-
+    public external fun getOpenCVVersion(): String
 }

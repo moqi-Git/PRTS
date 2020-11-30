@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.cli.jvm.main
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,7 +16,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFile(listOf("consumer-rules.pro"))
+
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+        }
     }
 
     buildTypes {
@@ -33,9 +39,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    sourceSets {
+        getByName("main").jniLibs.srcDirs("libs")
+    }
     externalNativeBuild {
         cmake {
-            this.path = File("CMakeLists.txt")
+            path("CMakeLists.txt")
         }
     }
 }

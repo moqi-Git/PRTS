@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
+import com.moqi.prts.float.PRTSFloatService
 import kotlin.concurrent.thread
 
 
@@ -53,12 +54,25 @@ class PRTSAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event?.also {
             Log.e("asdfg", "event: ${it.eventType}, text:${it.contentChangeTypes}")
-//            val root = rootInActiveWindow ?: return
-////            logNode(root)
+            GlobalStatus.currentForegroundApp = event.packageName.toString()
 
             when (it.eventType) {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-                    arknights(it)
+                    if (event.packageName == "com.hypergryph.arknights") {
+                        arknights(it)
+                        startService(
+                            Intent(
+                                applicationContext,
+                                PRTSFloatService::class.java
+                            ).apply { putExtra("float", true) })
+                    } else {
+                        startService(
+                            Intent(
+                                applicationContext,
+                                PRTSFloatService::class.java
+                            ).apply { putExtra("float", false) })
+                        Toast.makeText(applicationContext, "PRTS:已暂停", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -66,11 +80,11 @@ class PRTSAccessibilityService : AccessibilityService() {
 
     private fun arknights(event: AccessibilityEvent) {
         Log.e("asdfg", "foreground app changed to ${event.packageName}")
-        GlobalStatus.currentForegroundApp = event.packageName.toString()
 
-        if (event.packageName == "com.hypergryph.arknights" && !isThreadRunning) {
+        if (!isThreadRunning) {
             Toast.makeText(applicationContext, "PRTS:3秒后开始执行", Toast.LENGTH_SHORT).show()
             handler.postDelayed({
+                // todo: 恢复的进度
                 auto1_7()
             }, 3000)
         }
@@ -101,10 +115,10 @@ class PRTSAccessibilityService : AccessibilityService() {
         }, 7000)
         handler.postDelayed({
             clickArea(areaList[2])
-        }, 7000+11000)
+        }, 7000 + 11000)
         handler.postDelayed({
             auto1_7()
-        }, 7000+11000+10000)
+        }, 7000 + 11000 + 10000)
     }
 
     private fun clickPosition(px: Float, py: Float) {
