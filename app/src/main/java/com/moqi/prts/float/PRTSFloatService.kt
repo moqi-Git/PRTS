@@ -18,7 +18,6 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
-import kotlinx.android.synthetic.main.view_prts_float.view.*
 
 class PRTSFloatService : Service() {
 
@@ -65,10 +64,10 @@ class PRTSFloatService : Service() {
         mFloatView =
             LayoutInflater.from(applicationContext).inflate(R.layout.view_prts_float, null, false)
         mFloatView?.apply {
-            float_tv_prts.setOnClickListener {
+            findViewById<View>(R.id.float_tv_prts).setOnClickListener {
 //                stopSelf()
             }
-            float_iv_prts.setOnTouchListener { v, event ->
+            findViewById<View>(R.id.float_iv_prts).setOnTouchListener { v, event ->
                 when(event.actionMasked){
                     MotionEvent.ACTION_DOWN -> {
                         mTouchX = event.x

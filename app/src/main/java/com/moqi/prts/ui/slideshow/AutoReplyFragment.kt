@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.moqi.prts.R
 import com.moqi.prts.access.naviToSettingAccessibility
-import kotlinx.android.synthetic.main.fragment_slideshow.*
+import com.moqi.prts.databinding.FragmentSlideshowBinding
 
 class AutoReplyFragment : Fragment() {
 
   private lateinit var slideshowViewModel: AutoReplyViewModel
+
+  private var vb: FragmentSlideshowBinding? = null
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -20,13 +22,13 @@ class AutoReplyFragment : Fragment() {
     savedInstanceState: Bundle?
   ): View? {
     slideshowViewModel = ViewModelProvider(this).get(AutoReplyViewModel::class.java)
-    val root = inflater.inflate(R.layout.fragment_slideshow, container, false)
-    return root
+    vb = FragmentSlideshowBinding.inflate(inflater, container, false)
+    return vb?.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    wechat_btn_start.setOnClickListener {
+    vb?.wechatBtnStart?.setOnClickListener {
       requireContext().naviToSettingAccessibility()
     }
   }

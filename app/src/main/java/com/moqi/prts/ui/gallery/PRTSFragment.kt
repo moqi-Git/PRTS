@@ -12,13 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.access.naviToSettingAccessibility
+import com.moqi.prts.databinding.FragmentGalleryBinding
 import com.moqi.prts.ext.getWindowSize
 import com.moqi.prts.permission.requestCapturePermission
-import kotlinx.android.synthetic.main.fragment_gallery.*
 
 class PRTSFragment : Fragment() {
 
   private lateinit var galleryViewModel: PRTSViewModel
+
+  private var vb: FragmentGalleryBinding? = null
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -26,8 +28,8 @@ class PRTSFragment : Fragment() {
     savedInstanceState: Bundle?
   ): View? {
     galleryViewModel = ViewModelProvider(this).get(PRTSViewModel::class.java)
-    val root = inflater.inflate(R.layout.fragment_gallery, container, false)
-    return root
+    vb = FragmentGalleryBinding.inflate(inflater, container, false)
+    return vb?.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,8 +38,8 @@ class PRTSFragment : Fragment() {
   }
 
   private fun initView(){
-    prts_rv_main.layoutManager = LinearLayoutManager(requireContext())
-    prts_rv_main.adapter = PRTSAdapter().apply {
+    vb?.prtsRvMain?.layoutManager = LinearLayoutManager(requireContext())
+    vb?.prtsRvMain?.adapter = PRTSAdapter().apply {
       onItemClickEvent = { p ->
 //        Toast.makeText(requireContext(), "$p", Toast.LENGTH_SHORT).show()
         when(p){

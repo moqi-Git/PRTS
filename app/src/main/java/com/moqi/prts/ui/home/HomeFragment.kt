@@ -28,15 +28,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
+import com.moqi.prts.databinding.FragmentHomeBinding
 import com.moqi.prts.ext.isServiceRunning
 import com.moqi.prts.float.PRTSFloatService
-import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
 
   private lateinit var homeViewModel: HomeViewModel
   private lateinit var mm: MediaProjectionManager
   private lateinit var holder: SurfaceHolder
+
+  private var vb: FragmentHomeBinding? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -48,13 +50,14 @@ class HomeFragment : Fragment() {
     savedInstanceState: Bundle?
   ): View? {
     homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-    val root = inflater.inflate(R.layout.fragment_home, container, false)
-    return root
+//    val root = inflater.inflate(R.layout.fragment_home, container, false)
+    vb = FragmentHomeBinding.inflate(inflater, container, false)
+    return vb?.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    src_tv_start.setOnClickListener {
+    vb?.srcTvStart?.setOnClickListener {
       if (requireContext().isServiceRunning("com.moqi.prts.float.PRTSFloatService")){
         return@setOnClickListener
       }
@@ -62,6 +65,11 @@ class HomeFragment : Fragment() {
       startActivityForResult(mm.createScreenCaptureIntent(), 101)
     }
 //    holder = scr_sv_main.holder
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    vb = null
   }
 
   private fun screenShot(image: Image){
@@ -79,7 +87,7 @@ class HomeFragment : Fragment() {
 //    buffer.get(bytes)
 //    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
-    scr_iv_main.setImageBitmap(bitmap)
+    vb?.scrIvMain?.setImageBitmap(bitmap)
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

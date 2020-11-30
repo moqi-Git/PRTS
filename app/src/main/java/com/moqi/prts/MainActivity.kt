@@ -10,7 +10,6 @@ import com.moqi.prts.access.GlobalStatus
 import com.moqi.prts.access.naviToSettingAccessibility
 import com.moqi.prts.databinding.ActivityMainBinding
 import com.moqi.prts.permission.requestCapturePermission
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
