@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.cli.jvm.main
 
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     kotlin("android")
 }
 
@@ -21,6 +21,12 @@ android {
             abiFilters.add("arm64-v8a")
             abiFilters.add("armeabi-v7a")
         }
+
+        externalNativeBuild{
+            cmake{
+                arguments.add("-DANDROID_STL=c++_shared")
+            }
+        }
     }
 
     buildTypes {
@@ -39,9 +45,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    sourceSets {
-        getByName("main").jniLibs.srcDirs("libs")
-    }
+//    sourceSets {
+//        getByName("main").jniLibs.srcDirs("libs")
+//    }
     externalNativeBuild {
         cmake {
             path("CMakeLists.txt")

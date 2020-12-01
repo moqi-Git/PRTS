@@ -61,6 +61,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 
     implementation("org.greenrobot:eventbus:3.2.0")
+    implementation(project(":ptilopsis"))
 }
 
 //android {

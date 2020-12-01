@@ -6,7 +6,7 @@ class PtilopsisEyes{
 
     companion object{
         init {
-            System.loadLibrary("libptilopsis")
+            System.loadLibrary("ptilopsis")
         }
     }
 
