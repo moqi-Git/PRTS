@@ -18,5 +18,6 @@ fun Context.naviToApp(pkgName: String): Boolean{
 
 fun Context.naviToSettingAccessibility(){
     val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(intent)
 }

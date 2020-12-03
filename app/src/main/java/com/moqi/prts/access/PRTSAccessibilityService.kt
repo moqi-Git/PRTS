@@ -2,7 +2,10 @@ package com.moqi.prts.access
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.ComponentInfo
+import android.content.pm.PackageManager
 import android.graphics.Path
 import android.os.Handler
 import android.util.Log
@@ -16,7 +19,9 @@ import kotlin.concurrent.thread
 class PRTSAccessibilityService : AccessibilityService() {
 
     private val handler = Handler()
+    private lateinit var pkgManager: PackageManager
     private var isThreadRunning = false
+    private var isArknight = false
 
     private val areaList = ArrayList<Area>()
 
@@ -36,6 +41,8 @@ class PRTSAccessibilityService : AccessibilityService() {
                 )
             )
         }
+
+        pkgManager = applicationContext.packageManager
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -53,12 +60,19 @@ class PRTSAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event?.also {
-            Log.e("asdfg", "event: ${it.eventType}, text:${it.contentChangeTypes}")
-            GlobalStatus.currentForegroundApp = event.packageName.toString()
+//            GlobalStatus.currenstForegroundApp = event.packageName.toString()
 
             when (it.eventType) {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+                    if (!isActivity(it)){
+                        return
+                    }
+                    Log.e(
+                        "asdfg",
+                        "event: ${it.eventType}, text:${it.packageName}, ct:${it.className}"
+                    )
                     if (event.packageName == "com.hypergryph.arknights") {
+                        isArknight = true
                         arknights(it)
                         startService(
                             Intent(
@@ -66,12 +80,16 @@ class PRTSAccessibilityService : AccessibilityService() {
                                 PRTSFloatService::class.java
                             ).apply { putExtra("float", true) })
                     } else {
-                        startService(
-                            Intent(
-                                applicationContext,
-                                PRTSFloatService::class.java
-                            ).apply { putExtra("float", false) })
-                        Toast.makeText(applicationContext, "PRTS:已暂停", Toast.LENGTH_SHORT).show()
+                        if (isArknight) {
+                            startService(
+                                Intent(
+                                    applicationContext,
+                                    PRTSFloatService::class.java
+                                ).apply { putExtra("float", false) })
+                            Toast.makeText(applicationContext, "PRTS:已暂停", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        isArknight = false
                     }
                 }
             }
@@ -79,14 +97,22 @@ class PRTSAccessibilityService : AccessibilityService() {
     }
 
     private fun arknights(event: AccessibilityEvent) {
-        Log.e("asdfg", "foreground app changed to ${event.packageName}")
-
         if (!isThreadRunning) {
             Toast.makeText(applicationContext, "PRTS:3秒后开始执行", Toast.LENGTH_SHORT).show()
             handler.postDelayed({
                 // todo: 恢复的进度
                 auto1_7()
             }, 3000)
+        }
+    }
+
+    private fun isActivity(event: AccessibilityEvent): Boolean {
+        val component = ComponentName(event.packageName.toString(), event.className.toString())
+        return try {
+            val info = pkgManager.getActivityInfo(component, PackageManager.GET_META_DATA)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
         }
     }
 

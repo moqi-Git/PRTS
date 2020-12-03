@@ -100,17 +100,23 @@ class PRTSFloatService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("asdfg", "FloatService onStartCommand")
+
         intent?.apply {
             val showFloatView = getBooleanExtra("float", false)
             if (showFloatView && !isShowing) {
                 showFloatView()
+            }
+            if(!showFloatView && isShowing){
+                isShowing = false
+                mWindowManager?.removeView(mFloatView)
             }
 
             val startMediaProjection = getBooleanExtra("capture", false)
             if (startMediaProjection) {
                 startMediaProjection(this)
             }
+
+            Log.e("asdfg", "FloatService onStartCommand: showFloatView=$showFloatView, startMediaProjection=$startMediaProjection")
         }
 
         return super.onStartCommand(intent, flags, startId)
