@@ -53,6 +53,18 @@
         <service android:name=".float.PRTSFloatService"
             android:exported="false"
             android:foregroundServiceType="mediaProjection"/>
+
+        <activity android:name=".pages.TaskAceAct"
+            android:launchMode="singleTask"
+            android:taskAffinity=":ace"/>
+
+        <activity android:name=".pages.TaskBechAct"
+            android:launchMode="singleTask"
+            android:taskAffinity=":bech"/>
+
+        <activity android:name=".pages.TaskCommonAct"
+            android:launchMode="singleTop"/>
+
     </application>
 
 </manifest>

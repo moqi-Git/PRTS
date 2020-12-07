@@ -1,5 +1,6 @@
 package com.moqi.prts.ui.slideshow
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.moqi.prts.R
 import com.moqi.prts.access.naviToSettingAccessibility
 import com.moqi.prts.databinding.FragmentSlideshowBinding
+import com.moqi.prts.pages.TaskAceAct
+import com.moqi.prts.pages.TaskBechAct
 
 class AutoReplyFragment : Fragment() {
 
@@ -28,8 +31,11 @@ class AutoReplyFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    vb?.wechatBtnStart?.setOnClickListener {
-      requireContext().naviToSettingAccessibility()
+    vb?.wechatBtnStarta?.setOnClickListener {
+      startActivity(Intent(requireContext(), TaskAceAct::class.java))
+    }
+    vb?.wechatBtnStartb?.setOnClickListener {
+      startActivity(Intent(requireContext(), TaskBechAct::class.java))
     }
   }
 }

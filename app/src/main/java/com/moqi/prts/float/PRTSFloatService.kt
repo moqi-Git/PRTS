@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.media.Image
@@ -18,6 +19,7 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
+import kotlin.math.abs
 
 class PRTSFloatService : Service() {
 
@@ -34,6 +36,8 @@ class PRTSFloatService : Service() {
     private var mFloatView: View? = null
     private var mTouchX = 0f
     private var mTouchY = 0f
+    private var mMoveStartX = 0f
+    private var mMoveStartY = 0f
     private var isShowing = false
 
 
@@ -59,19 +63,21 @@ class PRTSFloatService : Service() {
     }
 
     // todo:// 封装View对象，独立出去
-    @SuppressLint("ClickableViewAccessibility")
     private fun createFloatView() {
         mFloatView =
             LayoutInflater.from(applicationContext).inflate(R.layout.view_prts_float, null, false)
         mFloatView?.apply {
-            findViewById<View>(R.id.float_tv_prts).setOnClickListener {
-//                stopSelf()
+            val tv = findViewById<View>(R.id.float_tv_prts)
+            tv.setOnClickListener {
+                stopSelf()
             }
             findViewById<View>(R.id.float_iv_prts).setOnTouchListener { v, event ->
                 when(event.actionMasked){
                     MotionEvent.ACTION_DOWN -> {
                         mTouchX = event.x
                         mTouchY = event.y
+                        mMoveStartX = event.rawX
+                        mMoveStartY = event.rawY
                         return@setOnTouchListener true
                     }
                     MotionEvent.ACTION_MOVE -> {
@@ -82,10 +88,27 @@ class PRTSFloatService : Service() {
                     }
                     MotionEvent.ACTION_UP -> {
 //                        Log.e("asdfg", "ACTION_UP float view to ${event.x}, ${event.y}")
-                        moveViewTo(0f, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
+                        val edgeX = if(GlobalStatus.screenWidth /2 > event.rawX){
+                            0f
+                        } else {
+                            GlobalStatus.screenWidth - mFloatView!!.width.toFloat()
+                        }
+                        moveViewTo(edgeX, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
+                        if (abs(event.rawY - mMoveStartX + event.rawX - mMoveStartY) < 2){
+                            v.performClick()
+                        }
                     }
                 }
                 return@setOnTouchListener false
+            }
+            findViewById<View>(R.id.float_iv_prts).setOnClickListener {
+                if (tv.scaleX == 0f){
+                    tv.visibility = View.VISIBLE
+                    tv.scaleX = 1f
+                } else {
+                    tv.visibility = View.GONE
+                    tv.scaleX = 0f
+                }
             }
         }
     }
@@ -140,10 +163,13 @@ class PRTSFloatService : Service() {
             }
 //            gravity = Gravity.START or Gravity.TOP
             flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN or
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            dimAmount = 0.5f
             format = PixelFormat.RGBA_8888
-//            x = 0
-//            y = 0
+            x = 0
+            y = 0
             gravity = Gravity.START or Gravity.TOP
             width = WindowManager.LayoutParams.WRAP_CONTENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
@@ -151,6 +177,12 @@ class PRTSFloatService : Service() {
         mWindowManager.addView(mFloatView, windowLayoutParams)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.e("asdfg", "onConfigurationChanged")
+    }
+
+    @SuppressLint("WrongConstant")
     private fun startMediaProjection(intent: Intent) {
         imageReader = ImageReader.newInstance(
             GlobalStatus.screenHeight,
