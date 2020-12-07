@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.moqi.prts.R
-import com.moqi.prts.access.PRTSAccessibilityService
 import com.moqi.prts.access.naviToSettingAccessibility
 import com.moqi.prts.databinding.FragmentSlideshowBinding
+import com.moqi.prts.pages.TaskAceAct
+import com.moqi.prts.pages.TaskBechAct
 
 class AutoReplyFragment : Fragment() {
 
@@ -30,11 +31,11 @@ class AutoReplyFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    vb?.wechatBtnStart?.setOnClickListener {
-//      requireContext().naviToSettingAccessibility()
-      requireContext().startService(Intent(requireContext(), PRTSAccessibilityService::class.java).apply {
-        putExtra("event", "click")
-      })
+    vb?.wechatBtnStarta?.setOnClickListener {
+      startActivity(Intent(requireContext(), TaskAceAct::class.java))
+    }
+    vb?.wechatBtnStartb?.setOnClickListener {
+      startActivity(Intent(requireContext(), TaskBechAct::class.java))
     }
   }
 }

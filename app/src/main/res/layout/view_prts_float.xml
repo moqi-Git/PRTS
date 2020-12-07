@@ -27,6 +27,8 @@
         android:layout_marginRight="12dp"
         android:text="PRTS监视区域"
         android:textColor="#fff"
-        android:textSize="22sp"/>
+        android:textSize="22sp"
+        android:scaleX="0.0"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
