@@ -54,6 +54,12 @@ class PRTSAccessibilityService : AccessibilityService() {
         return super.onUnbind(intent)
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e("asdfg", "onStartCommand: event=${intent?.getStringExtra("event")}")
+        handleGestureEvent(intent)
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onInterrupt() {
         Log.e("asdfg", "onInterrupt")
     }
@@ -145,6 +151,13 @@ class PRTSAccessibilityService : AccessibilityService() {
         handler.postDelayed({
             auto1_7()
         }, 7000 + 11000 + 10000)
+    }
+
+    private fun handleGestureEvent(intent: Intent?){
+        if (intent == null){
+            return
+        }
+//        val gesture = intent.getParcelableExtra<GestureEvent>("event")
     }
 
     private fun clickPosition(px: Float, py: Float) {
