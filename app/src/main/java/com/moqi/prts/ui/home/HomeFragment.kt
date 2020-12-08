@@ -58,23 +58,6 @@ class HomeFragment : Fragment() {
     vb = null
   }
 
-  private fun screenShot(image: Image){
-//    logImageInfo(image)
-    val buffer = image.planes[0].buffer
-    val width = image.width
-    val height = image.height
-//    val pixelStride = image.planes[0].pixelStride
-//    val rowStride = image.planes[0].rowStride
-//    val rowPadding = rowStride - pixelStride * width
-
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    bitmap.copyPixelsFromBuffer(buffer)
-//    val bytes = ByteArray(buffer.capacity())
-//    buffer.get(bytes)
-//    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-    vb?.scrIvMain?.setImageBitmap(bitmap)
-  }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)

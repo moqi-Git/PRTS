@@ -5,6 +5,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.media.Image
@@ -19,6 +20,8 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.math.abs
 
 class PRTSFloatService : Service() {
@@ -72,7 +75,7 @@ class PRTSFloatService : Service() {
                 stopSelf()
             }
             findViewById<View>(R.id.float_iv_prts).setOnTouchListener { v, event ->
-                when(event.actionMasked){
+                when (event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
                         mTouchX = event.x
                         mTouchY = event.y
@@ -84,15 +87,18 @@ class PRTSFloatService : Service() {
 //                        val dx = event.x - mTouchX
 //                        val dy = event.y - mTouchY
 //                        Log.e("asdfg", "ACTION_MOVE float view to ${event.x}, ${event.y}")
-                        moveViewTo(event.rawX - mTouchX, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
+                        moveViewTo(
+                            event.rawX - mTouchX,
+                            event.rawY - mTouchY - GlobalStatus.statusBarHeight
+                        )
                     }
                     MotionEvent.ACTION_UP -> {
 //                        Log.e("asdfg", "ACTION_UP float view to ${event.x}, ${event.y}")
 
-                        if (abs(event.rawY - mMoveStartX + event.rawX - mMoveStartY) < 2){
+                        if (abs(event.rawY - mMoveStartX + event.rawX - mMoveStartY) < 2) {
                             v.performClick()
                         }
-                        val edgeX = if(GlobalStatus.screenWidth /2 > event.rawX){
+                        val edgeX = if (GlobalStatus.screenWidth / 2 > event.rawX) {
                             0f
                         } else {
                             GlobalStatus.screenWidth - mFloatView!!.width.toFloat()
@@ -103,7 +109,7 @@ class PRTSFloatService : Service() {
                 return@setOnTouchListener false
             }
             findViewById<View>(R.id.float_iv_prts).setOnClickListener {
-                if (tv.scaleX == 0f){
+                if (tv.scaleX == 0f) {
                     tv.visibility = View.VISIBLE
                     tv.scaleX = 1f
                 } else {
@@ -115,7 +121,7 @@ class PRTSFloatService : Service() {
         }
     }
 
-    private fun moveViewTo(x: Float, y: Float){
+    private fun moveViewTo(x: Float, y: Float) {
 //        Log.e("asdfg", "move float view to $x, $y")
         windowLayoutParams.apply {
             this.x = x.toInt()
@@ -131,7 +137,7 @@ class PRTSFloatService : Service() {
             if (showFloatView && !isShowing) {
                 showFloatView()
             }
-            if(!showFloatView && isShowing){
+            if (!showFloatView && isShowing) {
                 isShowing = false
                 mWindowManager?.removeView(mFloatView)
             }
@@ -141,7 +147,10 @@ class PRTSFloatService : Service() {
                 startMediaProjection(this)
             }
 
-            Log.e("asdfg", "FloatService onStartCommand: showFloatView=$showFloatView, startMediaProjection=$startMediaProjection")
+            Log.e(
+                "asdfg",
+                "FloatService onStartCommand: showFloatView=$showFloatView, startMediaProjection=$startMediaProjection"
+            )
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -216,7 +225,7 @@ class PRTSFloatService : Service() {
         watching()
     }
 
-    private fun watching(){
+    private fun watching() {
         handler.postDelayed({
             val im = imageReader?.acquireLatestImage()
             im?.let {
@@ -227,14 +236,53 @@ class PRTSFloatService : Service() {
         }, 5000)
     }
 
-    private fun handleImage(im: Image){
+    private fun handleImage(im: Image) {
         // 1.判断是否在明日方舟内
         // 2.判断Image是在哪一个页面
         // 3.确定页面对应的可操作区域，进行模拟操作
         // 4.这些操作能在主线程做吗
         logImageInfo(im)
-
+        saveImage(im)
     }
+
+    private fun saveImage(image: Image) {
+        val savePath = applicationContext.getExternalFilesDir("ptilopsis")
+        val saveName = "im${System.currentTimeMillis()}.jpg"
+
+        val buffer = image.planes[0].buffer
+        val height = image.height
+        val pixelStride = image.planes[0].pixelStride
+        val rowStride = image.planes[0].rowStride
+
+        val bitmap = Bitmap.createBitmap(rowStride / pixelStride, height, Bitmap.Config.ARGB_8888)
+        bitmap.copyPixelsFromBuffer(buffer)
+
+        try {
+            val file = File(savePath, saveName)
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+        } catch (e: Exception) {
+
+        }
+    }
+
+//    private fun screenShot(image: Image){
+////    logImageInfo(image)
+//        val buffer = image.planes[0].buffer
+//        val width = image.width
+//        val height = image.height
+////    val pixelStride = image.planes[0].pixelStride
+////    val rowStride = image.planes[0].rowStride
+////    val rowPadding = rowStride - pixelStride * width
+//
+//        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+//        bitmap.copyPixelsFromBuffer(buffer)
+////    val bytes = ByteArray(buffer.capacity())
+////    buffer.get(bytes)
+////    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+//    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -251,7 +299,10 @@ class PRTSFloatService : Service() {
         startForeground(PRTS_NOTIFICATION_ID, notification)
     }
 
-    private fun logImageInfo(image: Image){
-        Log.e("asdfg", "format=${image.format}, size=(${image.width}, ${image.height}), rs=${image.planes[0].rowStride}, ps=${image.planes[0].pixelStride}")
+    private fun logImageInfo(image: Image) {
+        Log.e(
+            "asdfg",
+            "format=${image.format}, size=(${image.width}, ${image.height}), rs=${image.planes[0].rowStride}, ps=${image.planes[0].pixelStride}"
+        )
     }
 }
