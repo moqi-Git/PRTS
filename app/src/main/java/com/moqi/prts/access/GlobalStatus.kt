@@ -1,6 +1,7 @@
 package com.moqi.prts.access
 
 import android.app.Activity
+import android.util.Log
 import com.moqi.prts.ext.getWindowSize
 
 
@@ -16,7 +17,7 @@ object GlobalStatus {
 
     fun setGlobalScreenSize(act: Activity){
         val size = act.getWindowSize()
-        if (size.width > size.height){
+        if (size.width < size.height){
             screenWidth = size.width
             screenHeight = size.height
         } else {
@@ -28,5 +29,6 @@ object GlobalStatus {
         if (resourceId > 0) {
             statusBarHeight = act.resources.getDimensionPixelSize(resourceId)
         }
+        Log.e("asdfg", "scw=$screenWidth, sch=$screenHeight, sBH=$statusBarHeight")
     }
 }

@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.Image
 import android.media.ImageReader
 import android.media.projection.MediaProjection
@@ -23,6 +24,8 @@ import com.moqi.prts.R
 import com.moqi.prts.access.GlobalStatus
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.math.abs
 
 class PRTSFloatService : Service() {
@@ -36,12 +39,15 @@ class PRTSFloatService : Service() {
 
     private var mediaProjection: MediaProjection? = null
     private var imageReader: ImageReader? = null
+    private val mWorker = Executors.newSingleThreadExecutor()
 
     private var mFloatView: View? = null
     private var mTouchX = 0f
     private var mTouchY = 0f
     private var mMoveStartX = 0f
     private var mMoveStartY = 0f
+    private var mPercentX = 0f
+    private var mPercentY = 0f
     private var isShowing = false
 
 
@@ -124,6 +130,13 @@ class PRTSFloatService : Service() {
 
     private fun moveViewTo(x: Float, y: Float) {
 //        Log.e("asdfg", "move float view to $x, $y")
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mPercentX = x / GlobalStatus.screenWidth
+            mPercentY = y / GlobalStatus.screenHeight
+        } else {
+            mPercentX = x / GlobalStatus.screenHeight
+            mPercentY = y / GlobalStatus.screenWidth
+        }
         windowLayoutParams.apply {
             this.x = x.toInt()
             this.y = y.toInt()
@@ -179,7 +192,8 @@ class PRTSFloatService : Service() {
 //            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
 //            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 //            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-            WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+                WindowManager.LayoutParams.FLAG_SPLIT_TOUCH or
+                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 //            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
 //            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
 //            flags = WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
@@ -200,6 +214,11 @@ class PRTSFloatService : Service() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         Log.e("asdfg", "onConfigurationChanged")
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            moveViewTo(mPercentX * GlobalStatus.screenHeight, mPercentY * GlobalStatus.screenWidth)
+        } else {
+            moveViewTo(mPercentX * GlobalStatus.screenWidth, mPercentY * GlobalStatus.screenHeight)
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -227,10 +246,24 @@ class PRTSFloatService : Service() {
             1,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             imageReader?.surface,
-            null,
+            object : VirtualDisplay.Callback() {
+                override fun onPaused() {
+                    super.onPaused()
+                    Log.e("asdfg", "VirtualDisplay callback onPaused")
+                }
+
+                override fun onResumed() {
+                    super.onResumed()
+                    Log.e("asdfg", "VirtualDisplay callback onResumed")
+                }
+
+                override fun onStopped() {
+                    super.onStopped()
+                    Log.e("asdfg", "VirtualDisplay callback onStopped")
+                }
+            },
             null
         )
-
         watching()
     }
 
@@ -239,7 +272,6 @@ class PRTSFloatService : Service() {
             val im = imageReader?.acquireLatestImage()
             im?.let {
                 handleImage(it)
-                it.close()
             }
             watching()
         }, 5000)
@@ -250,8 +282,10 @@ class PRTSFloatService : Service() {
         // 2.判断Image是在哪一个页面
         // 3.确定页面对应的可操作区域，进行模拟操作
         // 4.这些操作能在主线程做吗
+        mWorker.execute {
+            saveImage(im)
+        }
         logImageInfo(im)
-        saveImage(im)
     }
 
     private fun saveImage(image: Image) {
@@ -265,6 +299,7 @@ class PRTSFloatService : Service() {
 
         val bitmap = Bitmap.createBitmap(rowStride / pixelStride, height, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(buffer)
+        image.close()
 
         try {
             val file = File(savePath, saveName)
