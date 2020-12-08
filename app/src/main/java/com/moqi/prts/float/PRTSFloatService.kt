@@ -1,5 +1,6 @@
 package com.moqi.prts.float
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
@@ -162,11 +163,19 @@ class PRTSFloatService : Service() {
                 WindowManager.LayoutParams.TYPE_PHONE
             }
 //            gravity = Gravity.START or Gravity.TOP
-            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN or
-                    WindowManager.LayoutParams.FLAG_DIM_BEHIND or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            dimAmount = 0.5f
+            flags =
+//                WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+//            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+//            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+            WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+//            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+//            flags = WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+//            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+//                    WindowManager.LayoutParams.FLAG_DIM_BEHIND or
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//            dimAmount = 0.5f
             format = PixelFormat.RGBA_8888
             x = 0
             y = 0
