@@ -88,15 +88,16 @@ class PRTSFloatService : Service() {
                     }
                     MotionEvent.ACTION_UP -> {
 //                        Log.e("asdfg", "ACTION_UP float view to ${event.x}, ${event.y}")
+
+                        if (abs(event.rawY - mMoveStartX + event.rawX - mMoveStartY) < 2){
+                            v.performClick()
+                        }
                         val edgeX = if(GlobalStatus.screenWidth /2 > event.rawX){
                             0f
                         } else {
                             GlobalStatus.screenWidth - mFloatView!!.width.toFloat()
                         }
                         moveViewTo(edgeX, event.rawY - mTouchY - GlobalStatus.statusBarHeight)
-                        if (abs(event.rawY - mMoveStartX + event.rawX - mMoveStartY) < 2){
-                            v.performClick()
-                        }
                     }
                 }
                 return@setOnTouchListener false
@@ -109,6 +110,7 @@ class PRTSFloatService : Service() {
                     tv.visibility = View.GONE
                     tv.scaleX = 0f
                 }
+
             }
         }
     }
@@ -201,8 +203,14 @@ class PRTSFloatService : Service() {
         }
         mediaProjection = mProjectionManager.getMediaProjection(Activity.RESULT_OK, intent)
         mediaProjection!!.createVirtualDisplay(
-            "test", GlobalStatus.screenHeight, GlobalStatus.screenWidth,
-            1, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader?.surface, null, null
+            "test",
+            GlobalStatus.screenHeight,
+            GlobalStatus.screenWidth,
+            1,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            imageReader?.surface,
+            null,
+            null
         )
 
         watching()
