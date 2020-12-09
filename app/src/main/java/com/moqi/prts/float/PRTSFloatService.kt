@@ -175,6 +175,7 @@ class PRTSFloatService : Service() {
         if (isShowing) {
             mWindowManager.removeView(mFloatView)
         }
+        handler.removeCallbacksAndMessages(null)
         mediaProjection?.stop()
     }
 
