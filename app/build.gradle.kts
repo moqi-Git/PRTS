@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("kotlin-android")
 //    kotlin("android.extensions")
 }
 //
@@ -61,6 +62,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
 
     implementation("org.greenrobot:eventbus:3.2.0")
+    implementation("com.squareup.leakcanary:leakcanary-android:2.5")
+
     implementation(project(":ptilopsis"))
 }
 

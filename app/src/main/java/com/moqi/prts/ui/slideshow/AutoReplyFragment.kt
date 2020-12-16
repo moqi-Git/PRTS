@@ -31,11 +31,6 @@ class AutoReplyFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    vb?.wechatBtnStarta?.setOnClickListener {
-      startActivity(Intent(requireContext(), TaskAceAct::class.java))
-    }
-    vb?.wechatBtnStartb?.setOnClickListener {
-      startActivity(Intent(requireContext(), TaskBechAct::class.java))
-    }
+
   }
 }
